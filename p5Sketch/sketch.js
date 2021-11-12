@@ -1,98 +1,118 @@
-let Canvas;
 let perceptron;
-let uno, dos, tres;
-const puntos = [];
-const widthC = 1000, heightC = 500;
-const centrarX = widthC / 2, centrarY = heightC / 2;
-const ciruclo1 = { x: 130, y: 63 };
-const ciruclo2 = { x: -130, y: -63 };
+let typeOne;
+let typeTwo;
+let typeThree;
+const points = [];
+
+const WIDTH = 600;
+const HEIGHT = 600;
+
 const M = 0.3;
 const BIAS = 0.05;
-const rango = 60;
-const capas = {
-    entry: 2,
-    hidden: 4,
-    exit: 3,
+
+const RANGE = 60;
+
+const xCenter = WIDTH / 2;
+const yCenter = HEIGHT / 2;
+
+const colors = {
+  1: [255, 0, 0],
+  2: [0, 255, 0],
 };
-const tamanoConocimiento = 0.1;
 
-function setup(){
-    Canvas = createCanvas(widthC, heightC);
-    frameRate(5);
-    perceptron = new Neuron(capas, tamanoConocimiento);
+const type1 = { x: 170, y: 170 };
+const type2 = { x: -170, y: -170 };
+
+const LAYERS = {
+  entry: 2,
+  hidden: 4,
+  exit: 3,
+};
+
+const getRandom = (max = 1, min = 0) => Math.random() * (max - min) + min;
+
+const getPointType = (vals) => {
+  if (vals[0] == 1 && vals[1] == 0 && vals[2] == 0) {
+    return 1;
+  } else if (vals[0] == 0 && vals[1] == 1 && vals[2] == 0) {
+    return 2;
+  } else {
+    return 0;
+  }
+};
+
+const LEARNING_RATE = 0.1;
+
+function setup() {
+  createCanvas(WIDTH, HEIGHT);
+  frameRate(6);
+
+  perceptron = new Neuron(LAYERS, LEARNING_RATE);
 }
 
-function draw(){
-    lineasD();
-    circulos();
-    dibujarPuntosP();
+function draw() {
+  background(250);
+  drawAxis();
+  drawCircles();
+
+  translate(xCenter, yCenter);
+  scale(1, -1);
+
+  Array.from(new Array(50)).forEach(() => {
+    points.push(
+      new Point(
+        getRandom(type1.x + RANGE, type1.x - RANGE),
+        getRandom(type1.y + RANGE, type1.y - RANGE)
+      )
+    );
+    points.push(
+      new Point(
+        getRandom(type2.x + RANGE, type2.x - RANGE),
+        getRandom(type2.y + RANGE, type2.y - RANGE)
+      )
+    );
+  });
+
+  points.forEach((point) => {
+    const values = categorize([0, 0, 0], point);
+
+    perceptron.train([point.x, point.y], values);
+    point.type = getPointType(perceptron.classify([point.x, point.y]));
+    point.draw();
+  });
 }
 
-function lineasD(){
-    push();
-    stroke(20);
-    line(centrarX, 0, centrarX, centrarY * 2);
-    line(0, centrarY, centrarX * 2, centrarY);
-    pop();
+function categorize(values = [], point) {
+  const vals = values;
+
+  if (isInRange(point, type1)) {
+    vals[0] = 1;
+  } else if (isInRange(point, type2)) {
+    vals[1] = 1;
+  }
+
+  return vals;
 }
 
-function circulos() {
-    push();
-    translate(centrarX, centrarY);
-    scale(2, -2);
-    stroke(4, 103, 18 );
-    ellipse(ciruclo1.x, ciruclo1.y, rango * 2);
-    stroke(147, 50, 4);
-    ellipse(ciruclo2.x, ciruclo2.y, rango * 2);
-    pop();
-  }
+const isInRange = (point, target) =>
+  dist(point.x, point.y, target.x, target.x) < RANGE;
 
-  function dibujarPuntosP(){
-    Array.from(new Array(10)).forEach(() => {
-        puntos.push(
-          new Puntos(
-            getRandom(ciruclo1.x + rango, ciruclo1.x - rango),
-            getRandom(ciruclo1.y + rango, ciruclo1.y - rango)
-          )
-        );
-        puntos.push(
-          new Puntos(
-            getRandom(ciruclo2.x + rango, ciruclo2.x - rango),
-            getRandom(ciruclo2.y + rango, ciruclo2.y - rango)
-          )
-        );
-      });
+function drawCircles() {
+  push();
+  translate(xCenter, yCenter);
+  scale(1, -1);
+  fill(0, 0, 0, 0);
+  stroke(255, 0, 0);
+  ellipse(type1.x, type1.y, RANGE * 2);
+  stroke(0, 255, 0);
+  ellipse(type2.x, type2.y, RANGE * 2);
+  pop();
+}
 
-      puntos.forEach((puntos) => {
-        const values = categorize([0, 0, 0], puntos);
-        perceptron.train([puntos.x, puntos.y], values);
-        puntos.type = getPointType(perceptron.classify([puntos.x, puntos.y]));
-        puntos.draw();
-      });
-  }
-
-  const obtenerValorPunto = (valor) => {
-    if (valor[0] == 1 && valor[1] == 0 && valor[2] == 0) {
-      return 1;
-    } else if (valor[0] == 0 && valor[1] == 1 && valor[2] == 0) {
-      return 2;
-    } else {
-      return 0;
-    }
-  }
-
-  function categorize(values = [], point) {
-    const vals = values;
-  
-    if (isInRange(point, ciruclo1)) {
-      vals[0] = 1;
-    } else if (isInRange(point, ciruclo2)) {
-      vals[1] = 1;
-    }
-  
-    return vals;
-  }
-  
-  const isInRange = (point, target) =>
-    dist(point.x, point.y, target.x, target.x) < rango;
-    const getRandom = (max = 1, min = 0) => Math.random() * (max - min) + min;
+function drawAxis() {
+  push();
+  stroke(200);
+  line(xCenter, 0, xCenter, yCenter * 2);
+  line(0, yCenter, xCenter * 2, yCenter);
+  pop();
+}

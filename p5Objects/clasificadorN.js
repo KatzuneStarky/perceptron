@@ -1,14 +1,14 @@
-class Neuron{
+class Neuron {
   /**
    * @constructor
-   * @param {object} capas
-   * @param {number} capas.entry
-   * @param {number} capas.hidden
-   * @param {number} capas.exit
+   * @param {object} layers
+   * @param {number} layers.entry
+   * @param {number} layers.hidden
+   * @param {number} layers.exit
    * @param {number} learningRate
    */
-   constructor(capas, learningRate) {
-    this.capas = capas;
+  constructor(layers, learningRate) {
+    this.layers = layers;
     this.alpha = learningRate;
     /*  Pesos y Bias */
     this.hiddenWeights = [];
@@ -17,24 +17,24 @@ class Neuron{
     this.exitBias = [];
 
     /* Llenado de pesos y bias */
-    Array.from(new Array(capas.hidden)).forEach(() =>
+    Array.from(new Array(layers.hidden)).forEach(() =>
       this.hiddenBias.push(getRandom(1, 0))
     );
 
-    Array.from(new Array(capas.exit)).forEach(() =>
+    Array.from(new Array(layers.exit)).forEach(() =>
       this.exitBias.push(getRandom(1, 0))
     );
 
-    this.hiddenWeights = Array.from(new Array(capas.entry)).map(() =>
-      Array.from(new Array(capas.hidden)).map(() => getRandom(1, 0))
+    this.hiddenWeights = Array.from(new Array(layers.entry)).map(() =>
+      Array.from(new Array(layers.hidden)).map(() => getRandom(1, 0))
     );
 
-    this.exitWeights = Array.from(new Array(capas.hidden)).map(() =>
-      Array.from(new Array(capas.exit)).map(() => getRandom(1, 0))
+    this.exitWeights = Array.from(new Array(layers.hidden)).map(() =>
+      Array.from(new Array(layers.exit)).map(() => getRandom(1, 0))
     );
 
-    this.hiddenOutput = Array(capas.hidden);
-    this.exitOutput = Array(capas.exit);
+    this.hiddenOutput = Array(layers.hidden);
+    this.exitOutput = Array(layers.exit);
   }
 
   /**
@@ -45,16 +45,16 @@ class Neuron{
     // Cálculo con la capa oculta
     this.hiddenOutput = this.calculateOutputs(
       x,
-      this.capas.entry,
-      this.capas.hidden,
+      this.layers.entry,
+      this.layers.hidden,
       this.hiddenWeights,
       this.hiddenBias
     );
     // Cálculo con la capa de salida
     this.exitOutput = this.calculateOutputs(
       this.hiddenOutput,
-      this.capas.hidden,
-      this.capas.exit,
+      this.layers.hidden,
+      this.layers.exit,
       this.exitWeights,
       this.exitBias
     );
@@ -97,22 +97,22 @@ class Neuron{
    * @param {[]} values
    */
   train(x, values) {
-    const hiddenD = Array(this.capas.hidden);
-    const exitD = Array(this.capas.exit);
+    const hiddenD = Array(this.layers.hidden);
+    const exitD = Array(this.layers.exit);
 
     // console.log(exitD);
 
     this.classify(x);
     // Cálculo con capa de salida
-    Array.from(new Array(this.capas.exit)).forEach((_, exitIndex) => {
+    Array.from(new Array(this.layers.exit)).forEach((_, exitIndex) => {
       const error = values[exitIndex] - Math.round(this.exitOutput[exitIndex]);
       exitD[exitIndex] = error * this.dF(this.exitOutput[exitIndex]);
     });
 
     // Cálculo con capa oculta
-    Array.from(new Array(this.capas.hidden)).forEach((_, hiddenIndex) => {
+    Array.from(new Array(this.layers.hidden)).forEach((_, hiddenIndex) => {
       let error = 0;
-      Array.from(new Array(this.capas.exit)).forEach((_, exitIndex) => {
+      Array.from(new Array(this.layers.exit)).forEach((_, exitIndex) => {
         error += this.exitWeights[hiddenIndex][exitIndex] * exitD[exitIndex];
       });
       hiddenD[hiddenIndex] = error * this.dF(this.hiddenOutput[hiddenIndex]);
