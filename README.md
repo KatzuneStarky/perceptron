@@ -5,3 +5,6 @@
 - Universidad Autonoma de Baja California Sur
 - Departamento Academico de Sistemas Computacionales
 - Carrera: Ingenieria en Desarrollo de Software
+
+## Como funciona el programa
+### p5Objects\clasificadorN.js
