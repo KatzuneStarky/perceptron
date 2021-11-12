@@ -6,5 +6,7 @@
 - Departamento Academico de Sistemas Computacionales
 - Carrera: Ingenieria en Desarrollo de Software
 
-## Como funciona el programa
-### p5Objects\clasificadorN.js
+## Debe entrenarse la red con puntos aleatorios cercanos y luego probarse con varios más.
+
+# Como funciona el programa
+## p5Objects\clasificadorN.js
