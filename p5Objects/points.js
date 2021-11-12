@@ -1,19 +1,21 @@
-class Puntos{
-    constructor (x, y, type = 1){
-        this.x = x;
-        this.y = y;
-        this.type = type;        
+class Puntos {
+    constructor(x, y, tipoPunto = 1) {
+      this.x = x;
+      this.y = y;
+      this.tipoPunto = tipoPunto;
     }
-}
-
-function draw(){
-    push();
-    strokeWeight(10);
-    if(this.type === 1){
-        stroke(23, 205, 204);
-    }else if(this.type === 2){
-        stroke(205, 137, 23 );
+  
+    draw() {
+      push();
+      strokeWeight(5);
+      if (this.tipoPunto === 1){
+        stroke(47, 231, 81);
+      }else if (this.tipoPunto === 2){
+        stroke(231, 87, 47);
+      }else{
+        stroke(0, 0, 0);
+      }
+      point(this.x, this.y);
+      pop();
     }
-    point(this.x, this.y);
-    pop();
-}
+  }
